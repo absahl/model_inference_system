@@ -1,5 +1,6 @@
 import sys
 import yaml
+from model import Model
 import numpy as np
 from transformers import AutoTokenizer
 from optimum.onnxruntime import ORTModelForSequenceClassification
@@ -8,12 +9,15 @@ config_file = 'config.yaml'
 
 if __name__ == '__main__':
     # parse config
-    print('Parsing config')
+    print('parsing config to get models')
+    models = []
     try:
         with open(config_file, 'r') as file:
             config = yaml.safe_load(file)
+
+        models = [Model(**m) for m in config.get('models', [])]
     except Exception as e:
-        print('Failed to parse config [{config_file}]')
+        print(f'failed to parse config [{config_file}] [exception:{e}]')
         sys.exit(1)
 
     # load models and tokenizers from HF
